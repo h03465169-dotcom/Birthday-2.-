@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! 🎉</title>
+    <!-- Open Graph for sharing -->
+    <meta property="og:title" content="Happy Birthday!">
+    <meta property="og:description" content="Wishing you an amazing day!">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/ff9a9e/ffffff?text=Happy+Birthday!">
+    <style>
+        /* Modern responsive CSS with animations */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            overflow-x: hidden;
+            animation: gradientShift 10s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.8);
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+        .message {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            color: #fff;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease forwards;
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .cake {
+            font-size: 6rem;
+            animation: float 3s ease-in-out infinite;
+            margin: 2rem 0;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-20px) rotate(3deg); }
+        }
+        .music-toggle {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0.5rem;
+        }
+        .music-toggle:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.05);
+        }
+        .music-status {
+            font-size: 1rem;
+            color: #fff;
+            margin-top: 1rem;
+            opacity: 0.8;
+        }
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            h1 { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="greeting">Happy Birthday! 🎉</h1>
+        <div class="message" id="msg">Wishing you a fantastic year ahead filled with joy and success!</div>
+        <div class="cake">🎂✨</div>
+        <button class="music-toggle" id="musicBtn" onclick="toggleMusic()">▶️ Play Music</button>
+        <div class="music-status" id="musicStatus">Click to play birthday tune!</div>
+    </div>
+
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script>
+        // Fixed greeting and message
+        const greetingText = "Happy Birthday! 🎉";
+        const messageText = "Wishing you a fantastic year ahead filled with joy and success!";
+
+        // Music setup - autoplay muted, user gesture required
+        const audio = new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.wav');
+        audio.loop = true;
+        audio.volume = 0.7;
+        let isPlaying = false;
+
+        // Initial load effects
+        window.addEventListener('load', () => {
+            document.getElementById('greeting').textContent = greetingText;
+            document.getElementById('msg').textContent = messageText;
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { y: 0.6 }
+            });
+            // Sequential animations
+            const elements = document.querySelectorAll('.message, .cake');
+            elements.forEach((el, i) => {
+                el.style.animationDelay = `${i * 0.5}s`;
+            });
+        });
+
+        // Toggle music with user gesture compliance
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                document.getElementById('musicBtn').textContent = '▶️ Play Music';
+                document.getElementById('musicStatus').textContent = 'Music paused';
+                isPlaying = false;
+            } else {
+                audio.play().catch(e => {
+                    document.getElementById('musicStatus').textContent = 'Autoplay blocked - click again';
+                });
+                document.getElementById('musicBtn').textContent = '⏸️ Pause Music';
+                document.getElementById('musicStatus').textContent = 'Happy Birthday tune playing!';
+                isPlaying = true;
+            }
+        }
+
+        // Service Worker for PWA (caches audio too)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript,addEventListener("install",e=>e.waitUntil(caches.open("bday-v1").then(c=>c.addAll([".","audio.mp3"]))));addEventListener("fetch",e=>caches.match(e.request).then(r=>r||fetch(e.request)))');
+        }
+    </script>
+</body>
+</html>
